@@ -1,13 +1,11 @@
+from typing import Optional
 from pydantic import BaseModel
 
-class NewUserModel(BaseModel):
-    name: str
-    email: str | None
-    phone: str | None
-    other: dict | None
+class UserModel(BaseModel):
+    name: Optional[str]
+    email: Optional[str]
+    phone: Optional[str]
+    other: Optional[str]
 
-class UpdateUserModel(BaseModel):
-    name: str | None
-    email: str | None
-    phone: str | None
-    other: dict | None
+class ConnectionModel(BaseModel):
+    info: Optional[str]

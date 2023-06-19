@@ -29,6 +29,7 @@ def create_user(tx, data):
         "id": nanoid.generate(),
         **data
     }
+    print(data)
     query = "CREATE (u:User $props) RETURN u"
     result = tx.run(query, props=props)
     return result.single().data()['u']
@@ -42,16 +43,31 @@ def read_user(tx, user_id):
         return item.data().get('u')
     
 @execute(WRITE)
-def update_user(tx, user_id, user_key, data):
+def update_user(tx, user_key, data):
     data.pop("key", None)
     data.pop("id", None)
-    query = "MATCH (u:User {id: $id, key: $key}) SET u += $props RETURN u"
-    result = tx.run(query, id=user_id, key=user_key, props=data)
+    print(data)
+    query = "MATCH (u:User {key: $key}) SET u += $props RETURN u"
+    result = tx.run(query, key=user_key, props=data)
     item = result.single()
     if item:
         return item.data().get('u')
 
 @execute(WRITE)
-def delete_user(tx, user_id, user_key):
-    query = "MATCH (u:User {id: $id, key: $key}) DETACH DELETE u"
-    result = tx.run(query, id=user_id, key=user_key)
+def delete_user(tx, user_key):
+    query = "MATCH (u:User {key: $key}) DETACH DELETE u"
+    result = tx.run(query, key=user_key)
+
+@execute(WRITE)
+def connect_to_user(tx, user_key, other_id, data):
+    query = "MATCH (u:User {key: $key}) " \
+            "MATCH (o:User {id: $id}) " \
+            "MERGE (u)-[r:KNOWS]->(o) " \
+            "MERGE (u)<-[:KNOWS]-(o) " \
+            "SET r += $props " \
+            "RETURN r"
+    result = tx.run(query, key=user_key, id=other_id, props=data)
+
+@execute(READ)
+def get_user_connections(tx, user_key):
+    query = "MATCH (u:User {key: $key})-[r:KNOWS]->(o:User)"

@@ -40,8 +40,10 @@ def read_user(tx, user_id):
     result = tx.run(query, id=user_id)
     item = result.single()
     if item:
-        return item.data().get('u')
-    
+        user = item.data().get('u')
+        user.pop('key', None)
+        return user
+   
 @execute(WRITE)
 def update_user(tx, user_key, data):
     data.pop("key", None)

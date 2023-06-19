@@ -1,3 +1,4 @@
-flask
-flask_restful
+fastapi
 neo4j
+nanoid
+uvicorn

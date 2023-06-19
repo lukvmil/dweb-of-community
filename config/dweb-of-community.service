@@ -1,0 +1,11 @@
+[Unit]
+Description=DWeb of Community API Service
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ubuntu/dweb-of-community
+ExecStart=/home/ubuntu/dweb-of-community/.env/bin/uvicorn backend:app --host 127.0.0.1 --port 8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

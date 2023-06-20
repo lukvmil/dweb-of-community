@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Header
-from backend.models import *
 from backend import database
+from backend.models import *
+from backend.utils import *
 
 app = FastAPI()
 
@@ -11,6 +12,7 @@ def landing_page():
 @app.post("/user")
 def create_user(new_user: UserModel):
     user = database.create_user(new_user.dict(exclude_unset=True))
+    generate_connect_code(user["id"])
     return user
 
 @app.get("/user/{user_id}")

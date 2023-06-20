@@ -29,7 +29,6 @@ def create_user(tx, data):
         "id": nanoid.generate(),
         **data
     }
-    print(data)
     query = "CREATE (u:User $props) RETURN u"
     result = tx.run(query, props=props)
     return result.single().data()['u']
@@ -48,7 +47,6 @@ def read_user(tx, user_id):
 def update_user(tx, user_key, data):
     data.pop("key", None)
     data.pop("id", None)
-    print(data)
     query = "MATCH (u:User {key: $key}) SET u += $props RETURN u"
     result = tx.run(query, key=user_key, props=data)
     item = result.single()

@@ -2,3 +2,4 @@ fastapi
 neo4j
 nanoid
 uvicorn
+qrcode

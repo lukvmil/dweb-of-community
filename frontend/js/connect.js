@@ -1,4 +1,4 @@
-params = new URLSearchParams(location.search);
+var params = new URLSearchParams(location.search);
 
 var user_key;
 var referrer_id;
@@ -17,6 +17,7 @@ if (params.has('to')) {
             user_key = user.key;
             localStorage.setItem('user_key', user.key);
             localStorage.setItem('user_id', user.id);
+            localStorage.setItem('setup_profile', false);
         })
     }
 }
@@ -25,7 +26,6 @@ function makeConnection() {
     fetch(`/api/user/${user_key}/connect/${referrer_id}`, {
         method: 'POST',
         headers: {
-            'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({

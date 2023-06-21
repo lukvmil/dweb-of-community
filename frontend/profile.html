@@ -5,12 +5,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
   <title>dweb of community</title>
 </head>
 
 <body>
   <div class="container">
-    <div class="container my-5 p-4 rounded-4 shadow-lg">
+    <div class="container my-5 p-4 rounded-4 white shadow-lg">
       <div class="text-center">
         <h1 class="display-5 fw-normal">set up your profile</h1>
       </div>
@@ -24,18 +25,18 @@
           <label class="form-label">Email</label>
           <input type="email" class="form-control">
         </div>
-      
+
         <div class="mb-3">
           <label class="form-label">Is there anything else you want to share?</label>
           <textarea type="email" class="form-control" rows="" style="resize: none;"></textarea>
         </div>
         <!-- <button type="submit" class="btn w-100 btn-primary">Done</button> -->
-        <div class="d-flex">
-          <button class="btn btn-primary btn me-1" style="width: 100%;">Done</button>
-
-          <button class="btn btn-secondary btn ms-1" style="width: 100%;">Go Back</button>
-      </div>
       </form>
+      <div class="d-flex">
+        <button class="btn btn-primary btn me-1" style="width: 100%;">Continue</button>
+
+        <button class="btn btn-secondary btn ms-1" style="width: 100%;" onclick="location.href='/'">Go Back</button>
+      </div>
     </div>
   </div>
 

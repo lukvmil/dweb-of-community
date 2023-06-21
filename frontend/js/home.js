@@ -1,8 +1,13 @@
+const setupContainer = document.getElementById("setup-container");
 const qrContainer = document.getElementById("qr-container");
 const profileContainer = document.getElementById("profile-container");
 const connectionContainer = document.getElementById("connection-container");
 
-user_id = localStorage.getItem('user_id');
+var user_id = localStorage.getItem('user_id');
+var setup_profile = localStorage.getItem('setup_profile');
+
+setupContainer.hidden = Boolean(setup_profile);
+profileContainer.hidden = !Boolean(setup_profile);
 
 if (user_id) {
     loadQR(user_id);

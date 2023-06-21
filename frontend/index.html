@@ -5,20 +5,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
   <title>dweb of community</title>
 </head>
 
-<body style="background-color: lavender">
+<body>
   <div class="container">
-    <div class="container my-5 p-4 rounded-4 shadow-lg" style="background-color:white">
+    <div class="container my-5 p-4 rounded-4 white shadow-lg">
       <div class="text-center">
-        <h1 class="fw-normal display-5 pb-3">welcome to the<br><span class="fw-bold">dweb of community</span></h1>
+        <h1 class="fw-normal display-5">welcome to the<br><span class="fw-bold">dweb of community</span></h1>
         <!-- <div class="col-lg-6 mx-auto">
           <p class="lead mb-4">an experimental social platform and interface for the physical world</p>
         </div> -->
       </div>
 
-      <div class="container mb-5" id="qr-container">
+      <div class="container rounded-4 my-4 p-4 border" id="setup-container">
+        <div class="text-center">
+          <h1 class="fw-normal display-5">before you get started, you need to<br>
+            <button class="btn btn-primary btn-lg mt-3" onclick="location.href='/profile?setup=true'">
+              set up your profile
+            </button>
+          </h1>
+        </div>
+      </div>
+
+      <div class="container mb-4" id="qr-container">
         <div class="text-center">
           <img class="img-fluid rounded-4 border" id="qrcode">
         </div>

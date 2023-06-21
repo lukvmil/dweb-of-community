@@ -11,20 +11,20 @@
 <body style="background-color: lavender">
   <div class="container">
     <div class="container my-5 p-4 rounded-4 shadow-lg" style="background-color:white">
-      <div class="p-4 text-center">
-        <h1 class="display-5 fw-bold pb-3">welcome to the <br> dweb of community</h1>
+      <div class="text-center">
+        <h1 class="fw-normal display-5 pb-3">welcome to the<br><span class="fw-bold">dweb of community</span></h1>
         <!-- <div class="col-lg-6 mx-auto">
           <p class="lead mb-4">an experimental social platform and interface for the physical world</p>
         </div> -->
       </div>
 
-      <div class="container mb-5">
+      <div class="container mb-5" id="qr-container">
         <div class="text-center">
           <img class="img-fluid rounded-4 border" id="qrcode">
         </div>
         <!-- <button type="button" class="w-100 btn btn-lg btn-outline-primary">Check it out!</button> -->
       </div>
-      <div class="card mb-3">
+      <div class="card mb-3" id="profile-container">
         <div class="card-header">
           Your profile   
         </div>
@@ -36,7 +36,7 @@
                 Luke Miller
               </button>
             </h2>
-            <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div id="flush-collapseOne" class="accordion-collapse collapse">
               <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the
                 <code>.accordion-flush</code> class. This is the first item's accordion body.
               </div>
@@ -45,7 +45,7 @@
         </div>
         <div class="card-footer"></div>
       </div>
-      <div class="card">
+      <div class="card" id="connection-container">
         <div class="card-header">
           Your connections
         </div>
@@ -57,7 +57,7 @@
                 Luke Miller
               </button>
             </h2>
-            <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div id="flush-collapseOne" class="accordion-collapse collapse">
               <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the
                 <code>.accordion-flush</code> class. This is the first item's accordion body.
               </div>
@@ -71,7 +71,7 @@
                 <span class="badge bg-primary mx-2">new!</span>
               </button>
             </h2>
-            <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div id="flush-collapseTwo" class="accordion-collapse collapse">
               <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the
                 <code>.accordion-flush</code> class. This is the second item's accordion body. Let's imagine this being
                 filled with some actual content.
@@ -85,7 +85,7 @@
                 Andy Kim
               </button>
             </h2>
-            <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div id="flush-collapseThree" class="accordion-collapse collapse">
               <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the
                 <code>.accordion-flush</code> class. This is the third item's accordion body. Nothing more exciting
                 happening here in terms of content, but just filling up the space to make it look, at least at first
@@ -94,7 +94,7 @@
             </div>
           </div>
         </div>
-        <div class="card-footer"></div>
+        <!-- <div class="card-footer"></div> -->
       </div>
     </div>
 

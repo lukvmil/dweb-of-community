@@ -16,8 +16,8 @@
 <body style="background-color: lavender">
   <div class="container">
     <div class="container my-5 p-4 rounded-4 shadow-lg" style="background-color:white">
-      <div class="p-4 text-center">
-        <h1 class="display-5 fw-bold pb-3">incoming connection from <span class="badge bg-primary badge-lg">Luke Miller</span>!</h1>
+      <div class="text-center">
+        <h1 class="fw-normal display-5 pb-3">connection with<br><span class="fw-bold">Luke Miller</span></h1>
         <!-- <div class="col-lg-6 mx-auto">
           <p class="lead mb-4">press connect to share your contact information</p>
         </div> -->
@@ -25,10 +25,10 @@
       <form>
         <div class="mb-3">
           <label class="form-label">What do you want to remember about this person?</label>
-          <textarea type="email" class="form-control" rows="8" style="resize: none;"></textarea>
+          <textarea class="form-control" id="connection-info" rows="8" style="resize: none;"></textarea>
           <div class="form-text">This note will only be visible to you.</div>
         </div>
-        <button type="button" class="btn w-100 btn-primary" onclick="makeConnection();">Connect</button>
+        <button type="button" class="btn w-100 btn-primary" onclick="makeConnection();">Submit</button>
       </form>
     </div>
   </div>

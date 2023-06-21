@@ -31,7 +31,6 @@ def create_qr_code(data: UrlModel):
 @api.post("/user/{referrer_id}")
 def create_user(referrer_id: str):
     user = database.create_user(referrer_id)
-    generate_connect_code(user["id"])
     return user
 
 @api.get("/user/{user_id}")

@@ -3,6 +3,8 @@ params = new URLSearchParams(location.search);
 var user_key;
 var referrer_id;
 
+const textInput = document.getElementById("connection-info");
+
 if (params.has('to')) {
     referrer_id = params.get('to');
 
@@ -27,11 +29,12 @@ function makeConnection() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            'info': 'test'
+            'info': textInput.value
         })
     })
     .then(resp => resp.json())
     .then(data => {
         console.log(data);
+        location.href = '/'
     })
 }

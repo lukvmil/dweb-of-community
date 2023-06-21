@@ -1,14 +1,23 @@
-var params = new URLSearchParams(location.search);
+const textInput = document.getElementById("connection-info");
+const referrerName = document.getElementById("referrer-name");
+
+const params = new URLSearchParams(location.search);
 
 var user_key;
 var referrer_id;
 
-const textInput = document.getElementById("connection-info");
 
 if (params.has('to')) {
     referrer_id = params.get('to');
 
     user_key = localStorage.getItem('user_key');
+
+    fetch(`/api/user/${referrer_id}`, {method: 'GET'})
+    .then(resp => resp.json())
+    .then(referrer => {
+        console.log(referrer);
+        referrerName.innerText = referrer.name;
+    })
 
     if (!user_key) {
         fetch(`/api/user/${referrer_id}`, {method: 'POST'})

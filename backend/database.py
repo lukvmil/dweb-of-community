@@ -2,7 +2,7 @@ import functools
 import string
 import nanoid
 from neo4j import GraphDatabase
-from backend.config import NEO4J_URI, NEO4J_AUTH
+from backend.config import *
 
 READ = "read"
 WRITE = "write"
@@ -22,11 +22,32 @@ def execute(mode, db="neo4j"):
         return wrapper
     return execute_internal
 
+@execute(READ)
+def get_root(tx):
+    query = "MATCH (r:User {root: true}) RETURN r"
+    result = tx.run(query)
+    item = result.single()
+    if item:
+        user = item.data().get('r')
+        return user
+
+@execute(WRITE)
+def create_root(tx):
+    props = {
+        "key": nanoid.generate(SECRET_CHAR_SET, SECRET_LENGTH),
+        "id": nanoid.generate(SECRET_CHAR_SET, SECRET_LENGTH),
+        "name": "Root",
+        "root": True
+    }
+    query = "CREATE (u:User $props) RETURN u"
+    result = tx.run(query, props=props)
+    return result.single().data()['u']
+
 @execute(WRITE)
 def create_user(tx, referrer_id):
     props = {
-        "key": nanoid.generate(),
-        "id": nanoid.generate(),
+        "key": nanoid.generate(SECRET_CHAR_SET, SECRET_LENGTH),
+        "id": nanoid.generate(SECRET_CHAR_SET, SECRET_LENGTH),
         "referrer": referrer_id
     }
     query = "CREATE (u:User $props) RETURN u"
@@ -45,8 +66,6 @@ def read_user(tx, user_id):
    
 @execute(WRITE)
 def update_user(tx, user_key, data):
-    data.pop("key", None)
-    data.pop("id", None)
     query = "MATCH (u:User {key: $key}) SET u += $props RETURN u"
     result = tx.run(query, key=user_key, props=data)
     item = result.single()

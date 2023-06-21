@@ -5,6 +5,7 @@ class UserModel(BaseModel):
     name: Optional[str]
     email: Optional[str]
     phone: Optional[str]
+    socials: Optional[str]
     other: Optional[str]
 
 class ConnectionModel(BaseModel):

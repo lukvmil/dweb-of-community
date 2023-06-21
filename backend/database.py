@@ -23,11 +23,11 @@ def execute(mode, db="neo4j"):
     return execute_internal
 
 @execute(WRITE)
-def create_user(tx, data):
+def create_user(tx, referrer_id):
     props = {
         "key": nanoid.generate(),
         "id": nanoid.generate(),
-        **data
+        "referrer": referrer_id
     }
     query = "CREATE (u:User $props) RETURN u"
     result = tx.run(query, props=props)
@@ -70,4 +70,5 @@ def connect_to_user(tx, user_key, other_id, data):
 
 @execute(READ)
 def get_user_connections(tx, user_key):
-    query = "MATCH (u:User {key: $key})-[r:KNOWS]->(o:User)"
+    query = "MATCH (u:User {key: $key})-[r:KNOWS]->(o:User)" \
+    "RETURN r, o"

@@ -9,3 +9,6 @@ class UserModel(BaseModel):
 
 class ConnectionModel(BaseModel):
     info: Optional[str]
+
+class UrlModel(BaseModel):
+    url: str

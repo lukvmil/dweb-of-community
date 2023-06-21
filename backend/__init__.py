@@ -2,6 +2,8 @@ from fastapi import FastAPI, APIRouter, Response
 from backend import database
 from backend.models import *
 from backend.utils import *
+import qrcode
+import os
 
 app = FastAPI()
 api = APIRouter(
@@ -12,6 +14,19 @@ api = APIRouter(
 @api.get("/")
 def hello():
     return {"mesg": "hello world"}
+
+@api.post("/qr/")
+def create_qr_code(data: UrlModel):
+    img_name = data.url.encode().hex()
+    img_path = "frontend/img/" + img_name + ".png"
+    img_url = "/img/" + img_name + ".png"
+    
+    if not os.path.exists(img_path):
+        print('making qr')
+        img = qrcode.make(data.url)
+        img.save(img_path)
+
+    return {"url": img_url}
 
 @api.post("/user/{referrer_id}")
 def create_user(referrer_id: str):

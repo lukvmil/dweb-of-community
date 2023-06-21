@@ -20,13 +20,13 @@
 
       <div class="container mb-5">
         <div class="text-center">
-          <img class="img-fluid p-4 rounded-4 border" id="qrcode">
+          <img class="img-fluid rounded-4 border" id="qrcode">
         </div>
         <!-- <button type="button" class="w-100 btn btn-lg btn-outline-primary">Check it out!</button> -->
       </div>
       <div class="card mb-3">
         <div class="card-header">
-          Your profile          
+          Your profile   
         </div>
         <div class="accordion accordion-flush">
           <div class="accordion-item">
@@ -99,17 +99,7 @@
     </div>
 
     <script src="/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/qrcode.js"></script>
-    <script>
-      var x = "luke"
-      new QRCode(
-        document.getElementById("qrcode"),
-        {
-          text: location.origin + `/connect?to=${x}`,
-          width: 256,
-          height: 256
-        });
-    </script>
+    <script src="/js/home.js"></script>
 </body>
 
 </html>

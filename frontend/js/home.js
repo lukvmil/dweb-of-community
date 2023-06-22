@@ -57,9 +57,8 @@ function createListItem(text, type) {
     console.log(text, type);
     listItem.hidden = false;
     listItem.children[0].textContent = type;
-    listItem.innerHTML += text;
-    console.log(listItem.innerHtml);
-    console.log(listItem.children[0].innerHtml)
+    // listItem.innerHTML += text;
+    listItem.insertAdjacentHTML('afterbegin', text);
     return listItem;
 }
 
@@ -75,12 +74,12 @@ function createProfileItem(item) {
     let list = body.children[0];
     let update_button = body.children[1];
     
-    if (item.email) {list.appendChild(createListItem(item.email, "email:"))}
-    if (item.location) {list.appendChild(createListItem(item.location, "location:"))}
-    if (item.phone) {list.appendChild(createListItem(item.phone, "phone:"))}
-    if (item.socials) {list.appendChild(createListItem(item.socials, "social:"))}
-    if (item.other) {list.appendChild(createListItem(item.other, "other:"))}
-    if (item.info) {list.appendChild(createListItem(item.info, "note:"))}
+    if (item.email) {list.appendChild(createListItem(item.email, "email"))}
+    if (item.location) {list.appendChild(createListItem(item.location, "location"))}
+    if (item.phone) {list.appendChild(createListItem(item.phone, "phone"))}
+    if (item.socials) {list.appendChild(createListItem(item.socials, "social"))}
+    if (item.other) {list.appendChild(createListItem(item.other, "other"))}
+    if (item.info) {list.appendChild(createListItem(item.info, "note"))}
 
     update_button.textContent = 'Update profile';
     update_button.onclick = () => {
@@ -102,12 +101,12 @@ function createConnectionItem(item) {
     let list = body.children[0];
     let update_button = body.children[1];
     
-    if (item.email) {list.appendChild(createListItem(item.email, "email:"))}
-    if (item.location) {list.appendChild(createListItem(item.location, "location:"))}
-    if (item.phone) {list.appendChild(createListItem(item.phone, "phone:"))}
-    if (item.socials) {list.appendChild(createListItem(item.socials, "social:"))}
-    if (item.other) {list.appendChild(createListItem(item.other, "other:"))}
-    if (item.info) {list.appendChild(createListItem(item.info, "note:"))}
+    if (item.email) {list.appendChild(createListItem(item.email, "email"))}
+    if (item.location) {list.appendChild(createListItem(item.location, "location"))}
+    if (item.phone) {list.appendChild(createListItem(item.phone, "phone"))}
+    if (item.socials) {list.appendChild(createListItem(item.socials, "social"))}
+    if (item.other) {list.appendChild(createListItem(item.other, "other"))}
+    if (item.info) {list.appendChild(createListItem(item.info, "note"))}
 
     update_button.onclick = () => {
         location.href = `/connect?to=${item.id}`;

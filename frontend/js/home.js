@@ -40,7 +40,12 @@ function loadConnections(user_key) {
     fetch(`/api/user/${user_key}/connect`)
         .then(resp=>resp.json())
         .then(connections=>{
+            connections.sort((a,b) => {
+                return new Date(b.timestamp) - new Date(a.timestamp);
+            });
             connections.forEach(item => {
+                console.log(item.timestamp);
+                console.log(item.info);
                 connectionItems.appendChild(createConnectionItem(item));
             })
         })
@@ -66,6 +71,7 @@ function createProfileItem(item) {
     let update_button = body.children[1];
     
     if (item.email) {list.appendChild(createListItem(item.email))}
+    if (item.location) {list.appendChild(createListItem(item.location))}
     if (item.phone) {list.appendChild(createListItem(item.phone))}
     if (item.socials) {list.appendChild(createListItem(item.socials))}
     if (item.other) {list.appendChild(createListItem(item.other))}
@@ -85,13 +91,14 @@ function createConnectionItem(item) {
     let button = connectionItem.children[0].children[0];
     button.setAttribute("data-bs-target", `#connection-${item.id}`);
     button.children[0].textContent = item.name;
-    button.children[1]
+    button.children[1].hidden = Boolean(item.info);
     connectionItem.children[1].setAttribute("id", `connection-${item.id}`);
     let body = connectionItem.children[1].children[0];
     let list = body.children[0];
     let update_button = body.children[1];
     
     if (item.email) {list.appendChild(createListItem(item.email))}
+    if (item.location) {list.appendChild(createListItem(item.location))}
     if (item.phone) {list.appendChild(createListItem(item.phone))}
     if (item.socials) {list.appendChild(createListItem(item.socials))}
     if (item.other) {list.appendChild(createListItem(item.other))}

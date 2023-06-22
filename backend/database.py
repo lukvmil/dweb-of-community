@@ -2,6 +2,7 @@ import functools
 import string
 import nanoid
 from neo4j import GraphDatabase
+from datetime import datetime
 from backend.config import *
 
 READ = "read"
@@ -57,10 +58,11 @@ def create_user(tx, referrer_id):
     props = {
         "key": nanoid.generate(SECRET_CHAR_SET, SECRET_LENGTH),
         "id": nanoid.generate(SECRET_CHAR_SET, SECRET_LENGTH),
+        "timestamp": datetime.now().isoformat(),
         "referrer": referrer_id
     }
-    query = "CREATE (u:User $props) RETURN u"
-    result = tx.run(query, props=props)
+    query = "MATCH (o:User {id: $id}) CREATE (o)-[:REFERRED]->(u:User $props) RETURN u"
+    result = tx.run(query, id=referrer_id, props=props)
     return result.single().data()['u']
 
 @execute(READ)
@@ -88,13 +90,19 @@ def delete_user(tx, user_key):
 
 @execute(WRITE)
 def connect_to_user(tx, user_key, other_id, data):
+    timestamp = datetime.now().isoformat()
+
+    # print(user_key, other_id)
+
     query = "MATCH (u:User {key: $key}) " \
             "MATCH (o:User {id: $id}) " \
             "MERGE (u)-[r:KNOWS]->(o) " \
-            "MERGE (u)<-[:KNOWS]-(o) " \
+            "ON CREATE SET r.timestamp = $timestamp " \
+            "MERGE (u)<-[s:KNOWS]-(o) " \
+            "ON CREATE SET s.timestamp = $timestamp " \
             "SET r += $props " \
             "RETURN r"
-    result = tx.run(query, key=user_key, id=other_id, props=data)
+    result = tx.run(query, key=user_key, id=other_id, props=data, timestamp=timestamp)
 
 @execute(WRITE)
 def get_user_connection(tx, user_key, other_id):
@@ -115,6 +123,7 @@ def get_user_connections(tx, user_key):
         row = record.data()
         user = row['user']
         connection = row['connection']
+        user.pop('timestamp', None)
         user.pop('key', None)
         user.update(connection)
         connections.append(user)

@@ -21,7 +21,7 @@ if (params.has('to')) {
     fetch(`/api/user/${user_key}/connect/${referrer_id}`)
         .then(resp => resp.json())
         .then(data => {
-            textInput.value = data.info;
+            textInput.value = data.info || "";
         })
 
     if (!user_key) {

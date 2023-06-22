@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class UserModel(BaseModel):
     name: Optional[str]
+    location: Optional[str]
     email: Optional[str]
     phone: Optional[str]
     socials: Optional[str]

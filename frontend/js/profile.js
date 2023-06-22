@@ -1,5 +1,6 @@
 var params = new URLSearchParams(location.search);
 const nameInput = document.getElementById("name-input");
+const locationInput = document.getElementById("location-input");
 const emailInput = document.getElementById("email-input");
 const phoneInput = document.getElementById("phone-input");
 const socialsInput = document.getElementById("socials-input");
@@ -13,6 +14,7 @@ if (user_id) {
         .then(resp => resp.json())
         .then(data => {
             nameInput.value = data.name || "";
+            locationInput.value = data.location || "";
             emailInput.value = data.email || "";
             phoneInput.value = data.phone || "";
             socialsInput.value = data.socials || "";
@@ -28,6 +30,7 @@ function makeProfile() {
         },
         body: JSON.stringify({
             'name': nameInput.value,
+            'location': locationInput.value,
             'email': emailInput.value,
             'phone': phoneInput.value,
             'socials': socialsInput.value,

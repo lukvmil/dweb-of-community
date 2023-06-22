@@ -15,9 +15,14 @@ if (params.has('to')) {
     fetch(`/api/user/${referrer_id}`, {method: 'GET'})
     .then(resp => resp.json())
     .then(referrer => {
-        console.log(referrer);
         referrerName.innerText = referrer.name;
     })
+
+    fetch(`/api/user/${user_key}/connect/${referrer_id}`)
+        .then(resp => resp.json())
+        .then(data => {
+            textInput.value = data.info;
+        })
 
     if (!user_key) {
         fetch(`/api/user/${referrer_id}`, {method: 'POST'})
@@ -43,7 +48,6 @@ function makeConnection() {
     })
     .then(resp => resp.json())
     .then(data => {
-        console.log(data);
         location.href = '/'
     })
 }

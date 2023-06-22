@@ -44,3 +44,13 @@ def delete_user(user_key: str):
 def connect_to_user(user_key: str, other_id: str, connection: ConnectionModel):
     database.connect_to_user(user_key, other_id, connection.dict(exclude_unset=True))
     return {"success": True}
+
+@router.get("/user/{user_key}/connect/{other_id}")
+def connect_to_user(user_key: str, other_id: str):
+    connection = database.get_user_connection(user_key, other_id)
+    return connection
+
+@router.get("/user/{user_key}/connect")
+def get_user_connections(user_key: str):
+    connections = database.get_user_connections(user_key)
+    return connections

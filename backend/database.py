@@ -96,7 +96,26 @@ def connect_to_user(tx, user_key, other_id, data):
             "RETURN r"
     result = tx.run(query, key=user_key, id=other_id, props=data)
 
+@execute(WRITE)
+def get_user_connection(tx, user_key, other_id):
+    query = "MATCH (u:User {key: $key})-[r:KNOWS]->(o:User {id: $id}) RETURN properties(r) as r"
+
+    result = tx.run(query, key=user_key, id=other_id)
+    item = result.single()
+    if item:
+        return item.data().get('r')
+
 @execute(READ)
 def get_user_connections(tx, user_key):
-    query = "MATCH (u:User {key: $key})-[r:KNOWS]->(o:User)" \
-    "RETURN r, o"
+    query = "MATCH (u:User {key: $key})-[r:KNOWS]->(o:User) " \
+    "RETURN properties(o) as user, properties(r) as connection"
+    result = tx.run(query, key=user_key)
+    connections = []
+    for record in result:
+        row = record.data()
+        user = row['user']
+        connection = row['connection']
+        user.pop('key', None)
+        user.update(connection)
+        connections.append(user)
+    return connections

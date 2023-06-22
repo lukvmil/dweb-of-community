@@ -43,6 +43,15 @@ def create_root(tx):
     result = tx.run(query, props=props)
     return result.single().data()['u']
 
+@execute(READ)
+def user_id_from_key(tx, user_key):
+    query = "MATCH (u:User {key: $key}) RETURN u"
+    result = tx.run(query, key=user_key)
+    item = result.single()
+    if item:
+        user = item.data().get('u')
+        return user.pop('id', None)
+
 @execute(WRITE)
 def create_user(tx, referrer_id):
     props = {

@@ -26,7 +26,7 @@ if (params.has('to')) {
             user_key = user.key;
             localStorage.setItem('user_key', user.key);
             localStorage.setItem('user_id', user.id);
-            localStorage.setItem('setup_profile', false);
+            localStorage.setItem('warn_setup_profile', 'true');
         })
     }
 }

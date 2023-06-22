@@ -11,10 +11,15 @@ router = APIRouter(
 def hello():
     return {"mesg": "hello world"}
 
-@router.post("/qr/")
+@router.post("/qr")
 def create_qr_code(data: UrlModel):
     img_url = make_qr_code(data.url)
     return {"url": img_url}
+
+@router.get("/user_id_from_key/{user_key}")
+def get_key(user_key: str):
+    user_id = database.user_id_from_key(user_key)
+    return {"id": user_id}
 
 @router.post("/user/{referrer_id}")
 def create_user(referrer_id: str):

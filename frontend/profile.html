@@ -19,43 +19,42 @@
       <form>
         <div class="mb-3">
           <label class="form-label">Name</label>
-          <input type="text" class="form-control">
+          <input type="text" class="form-control" id="name-input">
         </div>
 
         <div class="mb-3">
           <label class="form-label">Email</label>
-          <input type="text" class="form-control">
+          <input type="text" class="form-control" id="email-input">
         </div>
 
         <div class="mb-3">
           <label class="form-label">Phone (or Signal)</label>
-          <input type="text" class="form-control">
+          <input type="text" class="form-control" id="phone-input">
         </div>
 
         <div class="mb-3">
           <label class="form-label">Socials</label>
-          <textarea type="text" class="form-control" rows="5" style="resize: none;"></textarea>
+          <textarea type="text" class="form-control" rows="5" style="resize: none;" id="socials-input"></textarea>
           <div class="form-text">Share your GitHub, Twitter, Discord, etc.</div>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Other info</label>
           <textarea type="text" class="form-control" rows="5" style="resize: none;"></textarea>
-          <div class="form-text">Write a bio! Or your affiliation, interests, goals, etc.</div>
+          <div class="form-text" id="other-input">Write a bio! Or your affiliation, interests, goals, etc.</div>
         </div>
         <!-- <button type="submit" class="btn w-100 btn-primary">Done</button> -->
       </form>
       <div class="d-flex">
-        <button class="btn btn-primary btn me-1" style="width: 100%;">Continue</button>
+        <button class="btn btn-primary btn me-1" style="width: 100%;" onclick="makeProfile();">Continue</button>
 
         <button class="btn btn-secondary btn ms-1" style="width: 100%;" onclick="location.href='/'">Go Back</button>
       </div>
     </div>
   </div>
 
-
-
   <script src="/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/profile.js"></script>
 </body>
 
 </html>

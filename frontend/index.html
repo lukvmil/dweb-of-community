@@ -19,7 +19,19 @@
         </div> -->
       </div>
 
-      <div class="container rounded-4 my-4 p-4 border" id="setup-container">
+      <div class="container rounded-4 my-4 p-4 border" id="intro-container" hidden>
+        <div class="text-center">
+          <h1 class="fw-normal display-5">scan another user's connection code to join the network
+            <hr>or enter a user key to load your profile <br>
+            <div class="input-group mt-3">
+              <input type="text" class="form-control" id="key-input" placeholder="enter key here...">
+              <button class="btn btn-primary" type="button" onclick="loadKey();">Go</button>
+            </div>
+          </h1>
+        </div>
+      </div>
+
+      <div class="container rounded-4 my-4 p-4 border" id="setup-container" hidden>
         <div class="text-center">
           <h1 class="fw-normal display-5">before you get started, you need to<br>
             <button class="btn btn-primary btn-lg mt-3" onclick="location.href='/profile?setup=true'">
@@ -29,15 +41,15 @@
         </div>
       </div>
 
-      <div class="container mb-4" id="qr-container">
+      <div class="container my-4" id="qr-container">
         <div class="text-center">
           <img class="img-fluid rounded-4 border" id="qrcode">
         </div>
         <!-- <button type="button" class="w-100 btn btn-lg btn-outline-primary">Check it out!</button> -->
       </div>
-      <div class="card mb-3" id="profile-container">
+      <div class="card mb-4" id="profile-container">
         <div class="card-header">
-          Your profile   
+          Your profile
         </div>
         <div class="accordion accordion-flush">
           <div class="accordion-item">

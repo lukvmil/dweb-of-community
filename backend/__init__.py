@@ -11,5 +11,6 @@ if not root:
 
 referral_url = ORIGIN + "/connect?to=" + root['id']
 qr_code_url = ORIGIN + utils.make_qr_code(referral_url)
-print(referral_url)
-print(qr_code_url)  
+with open('root', 'w') as f:
+    f.write(referral_url + "\n")
+    f.write(qr_code_url)

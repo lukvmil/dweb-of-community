@@ -12,11 +12,11 @@ if (user_id) {
     fetch(`/api/user/${user_id}`)
         .then(resp => resp.json())
         .then(data => {
-            nameInput.value = data.name;
-            emailInput.value = data.email;
-            phoneInput.value = data.phone;
-            socialsInput.value = data.socials;
-            otherInput.value = data.other;
+            nameInput.value = data.name || "";
+            emailInput.value = data.email || "";
+            phoneInput.value = data.phone || "";
+            socialsInput.value = data.socials || "";
+            otherInput.value = data.other || "";
         })
 }
 

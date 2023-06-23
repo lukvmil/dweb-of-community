@@ -2,6 +2,8 @@ const textInput = document.getElementById("connection-info");
 const referrerName = document.getElementById("referrer-name");
 
 const params = new URLSearchParams(location.search);
+var setup_profile = localStorage.getItem('warn_setup_profile');
+
 
 var user_key;
 var referrer_id;
@@ -48,6 +50,10 @@ function makeConnection() {
     })
     .then(resp => resp.json())
     .then(data => {
-        location.href = '/'
+        if (setup_profile) {
+            location.href = '/profile';
+        } else {
+            location.href = '/';
+        }
     })
 }

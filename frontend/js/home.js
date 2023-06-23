@@ -45,8 +45,6 @@ function loadConnections(user_key) {
                 return new Date(b.timestamp) - new Date(a.timestamp);
             });
             connections.forEach(item => {
-                console.log(item.timestamp);
-                console.log(item.info);
                 connectionItems.appendChild(createConnectionItem(item));
             })
         })
@@ -54,7 +52,6 @@ function loadConnections(user_key) {
 
 function createListItem(text, type) {
     let listItem = connectionItemTemplate.cloneNode(true);
-    console.log(text, type);
     listItem.hidden = false;
     listItem.children[0].textContent = type;
     // listItem.innerHTML += text;

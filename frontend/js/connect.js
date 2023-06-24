@@ -50,7 +50,7 @@ function makeConnection() {
     })
     .then(resp => resp.json())
     .then(data => {
-        if (setup_profile) {
+        if (localStorage.getItem('warn_setup_profile')) {
             location.href = '/profile';
         } else {
             location.href = '/';

@@ -1,5 +1,7 @@
+import koi.config
+
 NEO4J_URI = "bolt://localhost:7687"
-NEO4J_AUTH = ("neo4j", "dweb-of-community")
-SECRET_CHAR_SET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-SECRET_LENGTH = 10
-ORIGIN = "http://community.d.dweb.city"
+NEO4J_AUTH = ("neo4j", "koi-pond")
+ROOT_ID = "eT2sGfN8Zk"
+
+koi.config.PINECONE_INDEX_NAME = "web-of-community"

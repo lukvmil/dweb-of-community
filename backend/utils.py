@@ -1,13 +1,5 @@
-import qrcode
-import os
+import nanoid
 
-def make_qr_code(url):
-    img_name = url.encode().hex()
-    img_path = "frontend/img/" + img_name + ".png"
-    img_url = "/img/" + img_name + ".png"
-
-    if not os.path.exists(img_path):
-        img = qrcode.make(url)
-        img.save(img_path)
-
-    return img_url
+secret_char_set = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+def generate_secret(length=10):
+    return nanoid.generate(secret_char_set, length)

@@ -15,46 +15,49 @@
       <div class="text-center">
         <h1 class="display-5 mb-3 fw-normal">set up your profile</h1>
       </div>
-      <h4 class="text-body-secondary mb-3">all field are optional!<br>fill out what you want to share</h4>
-      <form>
+      <h4 class="text-body-secondary mb-3">fill out only what you want to share, profile will be visible to users you connect with</h4>
+      <form id="profile-form">
         <div class="mb-3">
-          <label class="form-label">Name</label>
+          <label class="form-label">Name <span class="text-secondary">(required)</span></label>
           <input type="text" class="form-control" id="name-input">
+          <div class="invalid-feedback">
+            Please enter your name
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Email <span class="text-secondary">(required)</span></label>
+          <input type="email" class="form-control" id="email-input">
+          <div class="invalid-feedback">
+            Please enter a valid email address
+          </div>
+          <div class="form-text">Used for account recovery and sending your connections after camp ends</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Bio</label>
+          <textarea type="text" class="form-control" rows="5" style="resize: none;" id="bio-input"></textarea>
+          <div class="form-text">Share something about yourself! Your projects, interests, affiliation, etc.</div>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Location</label>
           <input type="text" class="form-control" id="location-input">
-          <div class="form-text">Where is your home base?</div>
+          <div class="form-text">Where are you based?</div>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input type="text" class="form-control" id="email-input">
+          <label class="form-label">Contact Info</label>
+          <textarea type="text" class="form-control" rows="5" style="resize: none;" id="contact-info-input"></textarea>
+          <div class="form-text">Share your Signal, GitHub, Twitter, Discord, etc.</div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Phone (or Signal)</label>
-          <input type="text" class="form-control" id="phone-input">
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Socials</label>
-          <textarea type="text" class="form-control" rows="5" style="resize: none;" id="socials-input"></textarea>
-          <div class="form-text">Share your GitHub, Twitter, Discord, etc.</div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Other info</label>
-          <textarea type="text" class="form-control" rows="5" style="resize: none;" id="other-input"></textarea>
-          <div class="form-text">Write a bio! Or your affiliation, interests, goals, etc.</div>
-        </div>
         <!-- <button type="submit" class="btn w-100 btn-primary">Done</button> -->
       </form>
       <div class="d-flex">
-        <button class="btn btn-primary btn me-1" style="width: 100%;" onclick="makeProfile();">Continue</button>
-
-        <button class="btn btn-secondary btn ms-1" style="width: 100%;" onclick="location.href='/'">Go Back</button>
+        <button class="btn btn-primary btn" style="width: 100%;" onclick="makeProfile();">Continue</button>
+        <div class="mx-2"></div>
+        <button class="btn btn-secondary btn" style="width: 100%;" onclick="location.href='/'">Go Back</button>
       </div>
     </div>
   </div>

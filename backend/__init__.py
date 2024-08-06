@@ -1,16 +1,16 @@
+import koi
+import qrcode
 from fastapi import FastAPI
-from backend import api, database, utils
-from backend.config import ORIGIN
+from backend.routers import user, contact, all
+from backend.config import ROOT_ID
+import socket
 
 app = FastAPI()
-app.include_router(api.router)
+app.include_router(user.router)
+app.include_router(contact.router)
+app.include_router(all.router)
 
-root = database.get_root()
-if not root:
-    root = database.create_root()
-
-referral_url = ORIGIN + "/connect?to=" + root['id']
-qr_code_url = ORIGIN + utils.make_qr_code(referral_url)
-with open('root', 'w') as f:
-    f.write(referral_url + "\n")
-    f.write(qr_code_url)
+origin = socket.gethostbyname(socket.gethostname())
+invite_url = f"http://{origin}/connect?to={ROOT_ID}&name=Um9vdA"
+print("Root URL:", invite_url)
+qrcode.make(invite_url).save("root.png")

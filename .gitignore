@@ -2,3 +2,8 @@ __pycache__
 .env
 *.png
 root
+venv
+cache
+.vscode
+token.json
+credentials.json

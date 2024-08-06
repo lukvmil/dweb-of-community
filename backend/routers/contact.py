@@ -9,6 +9,8 @@ router = APIRouter(
     prefix="/api/user"
 )
 
+contact_table = {}
+
 class ContactModel(BaseModel):
     note: str | None = None
 
@@ -76,3 +78,49 @@ def read_contact(
     if user_key != data["user_key"]:
         raise HTTPException(status_code=401, detail="Unauthorized")
     return CommunityContact(user_id, contact_id).cache.read().json_data
+
+@router.post("/{user_id}/signal/{other_id}")
+def signal_contact(
+    user_id: str,
+    other_id: str,
+    user_key = Header(...)
+):
+    user = CommunityUser(user_id)
+    data = user.cache.read().json_data
+    if not data:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user_key != data["user_key"]:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    contact_table[other_id] = {
+        "contact_id": user_id,
+        "name": CommunityUser(other_id).cache.read().json_data["name"],
+        "timestamp": time.time()
+    }
+    
+@router.get("/{user_id}/signal")
+def poll_contacts(
+    user_id: str,
+    user_key = Header(...)
+):
+    timeout = 5
+    user = CommunityUser(user_id)
+    data = user.cache.read().json_data
+    if not data:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user_key != data["user_key"]:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    contact_entry = contact_table.get(user_id)
+    
+    if (not contact_entry) or (time.time() - timeout) > contact_entry["timestamp"]:
+        return {
+            "contact": False
+        }
+    else:
+        del contact_table[user_id]
+        return {
+            "contact": True,
+            "contact_id": contact_entry["contact_id"],
+            "name": contact_entry["name"]
+        }

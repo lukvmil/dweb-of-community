@@ -1,5 +1,5 @@
 const setupContainer = document.getElementById("setup-container");
-const graphContainer = document.getElementById("cy");
+const graphContainer = document.getElementById("graph-container");
 const qrContainer = document.getElementById("qr-container");
 const profileContainer = document.getElementById("profile-container");
 const connectionContainer = document.getElementById("connection-container");
@@ -22,6 +22,9 @@ if (setup_profile) {
 
 if (user_id) {    
     loadAll();
+    setInterval(() => {
+        pollContact();
+    }, 1000);
 } else {
     qrContainer.hidden = true;
     profileContainer.hidden = true;
@@ -30,6 +33,19 @@ if (user_id) {
     graphContainer.hidden = true;
 }    
 
+async function pollContact() {
+    await fetch(`/api/user/${user_id}/signal`, {
+        headers: {
+            'User-Key': user_key
+        }
+    })
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.contact) {
+                location.href = `/connect?to=${data.contact_id}&name=${btoa(data.name)}`;
+            }
+        })
+}
 
 async function loadAll() {
     await fetch(`/api/user/${user_id}/all`, {
@@ -55,49 +71,92 @@ function loadGraph(nodes, edges) {
             {
                 selector: "node",
                 style: {
-                    'background-color': 'data(color)',
-                    label: 'data(name)'
+                    label: 'data(name)',
+                    width: 50,
+                    height: 50,
+                    'text-margin-y': -10,
+                    'text-background-shape': 'round-rectangle',
+                    'text-background-padding': 3,
+                    'text-background-opacity': 1,
+                    'text-background-color': 'white',
+                    'text-border-opacity': 1,
+                    'text-border-width': 1,
+                    'text-border-color': 'black',
+                    'border-width': 3
+                }
+            },
+            {
+                selector: 'node[role="user"]',
+                style: {
+                    'background-color': '#FF6347 '
+                }
+            },
+            {
+                selector: 'node[role="friend"]',
+                style: {
+                    'background-color': '#4682B4'
                 }
             },
             {
                 selector: "edge",
                 style: {
                     'width': 3,
-                    'line-color': 'data(color)',
-                    'target-arrow-color': 'data(color)',
+                    'line-color': 'black',
+                    'target-arrow-color': 'black',
                     'target-arrow-shape': 'triangle',
-                    'curve-style': 'bezier'
+                    'curve-style': 'bezier',
+                    'line-style': 'data(linestyle)'
                   }
             }
         ]
     });
 
+    let unnamed_nodes = new Array();
+
     nodes.forEach(node => {
-        let color;
+        let role;
         if (node.id == user_id) {
-            color = "red";
+            role = "user";
         } else if (node.friend) {
-            color = "blue";
+            role = "friend";
         } else {
-            color = "grey";
+            role = "unknown";
         }
+
+        if (!node.name) {
+            unnamed_nodes.push(node.id);
+            return;
+        };
+
         cy.add({
             data: {
                 id: node.id,
                 name: node.name,
-                color: color
+                role: role
             }
         })
     });
     edges.forEach(edge => {
+        if (unnamed_nodes.includes(edge.from) || unnamed_nodes.includes(edge.to))
+            return;
+        
         cy.add({
             data: {
                 id: `${edge.to}:${edge.from}`,
                 source: edge.from,
                 target: edge.to,
-                color: edge.invited ? "blue" : "grey"
+                linestyle: edge.invited ? "dashed" : "solid"
             }
         })
+    });
+    cy.on('tap', 'node', event => {
+        let node = event.target;
+        let profileButton = document.getElementById(`profile-button-${node.id()}`)
+        if (profileButton) {
+            profileButton.click();
+            if (!profileButton.classList.contains("collapsed"))
+                profileButton.scrollIntoView(true);
+        }
     });
     cy.layout({
         name: "cose"
@@ -118,6 +177,7 @@ function createProfileItem(item) {
     connectionItem.hidden = false;
     let button = connectionItem.children[0].children[0];
     button.setAttribute("data-bs-target", `#profile-${item.user_id}`);
+    button.setAttribute("id", `profile-button-${item.user_id}`)
     button.children[0].textContent = item.name;
     button.children[1]
     connectionItem.children[1].setAttribute("id", `profile-${item.user_id}`);
@@ -143,10 +203,11 @@ function createConnectionItem(item) {
     let connectionItem = connectionTemplate.cloneNode(true);
     connectionItem.hidden = false;
     let button = connectionItem.children[0].children[0];
-    button.setAttribute("data-bs-target", `#connection-${item.user_id}`);
+    button.setAttribute("data-bs-target", `#profile-${item.user_id}`);
+    button.setAttribute("id", `profile-button-${item.user_id}`)
     button.children[0].textContent = item.name;
     button.children[1].hidden = Boolean(item.note);
-    connectionItem.children[1].setAttribute("id", `connection-${item.user_id}`);
+    connectionItem.children[1].setAttribute("id", `profile-${item.user_id}`);
     let body = connectionItem.children[1].children[0];
     let list = body.children[0];
     let update_button = body.children[1];
@@ -166,7 +227,7 @@ function createConnectionItem(item) {
 
 async function loadQR(user_id, user_name) {
     var qrdiv = document.createElement("div");
-    var invitation_url = `${location.origin}/connect?to=${user_id}&name=${btoa(user_name)}`;
+    var invitation_url = `${location.origin}/connect?to=${user_id}&name=${btoa(user_name)}&notify`;
     console.log(invitation_url);
     new QRCode(qrdiv, {
         text: invitation_url,

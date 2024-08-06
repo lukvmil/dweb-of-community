@@ -11,6 +11,6 @@ app.include_router(contact.router)
 app.include_router(all.router)
 
 origin = socket.gethostbyname(socket.gethostname())
-invite_url = f"http://{origin}/connect?to={ROOT_ID}&name=Um9vdA"
+invite_url = f"http://{origin}/connect?to={ROOT_ID}&name=Um9vdA&root"
 print("Root URL:", invite_url)
 qrcode.make(invite_url).save("root.png")

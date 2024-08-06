@@ -9,7 +9,6 @@ var user_key;
 var referrer_id;
 var existing_connection = false;
 
-
 if (params.has('to')) {
     referrer_id = params.get('to');
     referrer_name = params.get('name')
@@ -18,6 +17,20 @@ if (params.has('to')) {
     user_key = localStorage.getItem('user_key');
 
     referrerName.innerText = atob(referrer_name)
+
+    if (params.has('notify')) {
+        fetch(`/api/user/${user_id}/signal/${referrer_id}`, {
+            method: "POST",
+            headers: {
+                "user-Key": user_key
+            }
+        });
+        var url = new URL(window.location.href);
+        var url_params = url.searchParams;
+        url_params.delete('notify');
+        var new_url = url.origin + url.pathname + '?' + url_params.toString();
+        window.history.replaceState({}, document.title, new_url);
+    }
 
     if (user_key) {
         fetch(`/api/user/${user_id}/connect/${referrer_id}`, {
@@ -48,6 +61,8 @@ if (params.has('to')) {
                 localStorage.setItem('user_id', resp.user_id);
                 localStorage.setItem('warn_setup_profile', 'true');
                 existing_connection = false;
+                if (params.has('root'))
+                    location.href = '/profile';
         })
     }
 }

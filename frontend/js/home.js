@@ -205,7 +205,7 @@ function createConnectionItem(item) {
     let button = connectionItem.children[0].children[0];
     button.setAttribute("data-bs-target", `#profile-${item.user_id}`);
     button.setAttribute("id", `profile-button-${item.user_id}`)
-    button.children[0].textContent = item.name;
+    button.children[0].textContent = item.name || "New User";
     button.children[1].hidden = Boolean(item.note);
     connectionItem.children[1].setAttribute("id", `profile-${item.user_id}`);
     let body = connectionItem.children[1].children[0];

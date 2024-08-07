@@ -5,7 +5,7 @@ from rid_lib.core import DataObject
 from rid_lib.types import KoiLink, KoiSet
 
 from backend.rid_types import CommunityUser
-from backend import utils
+from backend import utils, email_api
 
 router = APIRouter(
     prefix="/api/user"
@@ -32,6 +32,11 @@ def create_user(invited_by: str | None = None):
     contact_set.graph.create([])
     contact_link = KoiLink(user, contact_set, "has_contacts")
     contact_link.graph.create()
+    
+    knowledge_set = KoiSet(nanoid.generate())
+    knowledge_set.graph.create([])
+    knowledge_link = KoiLink(user, knowledge_set, "has_knowledge")
+    knowledge_link.graph.create()
     
     if invited_by:
         inviter = CommunityUser(invited_by)
@@ -61,6 +66,19 @@ def update_user(
         raise HTTPException(status_code=404, detail="User not found")
     if user_key != data["user_key"]:
         raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    # if data.get("email") != profile.email:
+    #     email_api.send(
+    #         profile.email,
+    #         "Welcome to the Web of Community!",
+    #         f"""Hi {profile.name},
+            
+    #         You are receiving this email because you just joined the Web of Community, or changed your email address. Here is the recovery key for your account:
+            
+    #         {user_id}/{user_key}
+    #         """
+    #     )
+    
     data.update(profile.model_dump())
     user.cache.write(DataObject(data))
     del data["user_key"]

@@ -9,21 +9,21 @@ from email.message import EmailMessage
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
-def load_creds():
-    creds = None    
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", SCOPES
-                )
-                creds = flow.run_local_server(port=0)
-            # Save the credentials for the next run
-            with open("token.json", "w") as token:
-                token.write(creds.to_json())
+creds = None    
+if os.path.exists("token.json"):
+    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+if not creds or not creds.valid:
+    if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+    else:
+        flow = InstalledAppFlow.from_client_secrets_file(
+            "credentials.json", SCOPES
+        )
+        creds = flow.run_local_server(port=0)
+    # Save the credentials for the next run
+    with open("token.json", "w") as token:
+        token.write(creds.to_json())
+    
             
 def send(to, subject, content):
     service = build("gmail", "v1", credentials=creds)
@@ -35,7 +35,6 @@ def send(to, subject, content):
     message["Subject"] = subject
     
     encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
-    print(encoded_message)
     
     return (
         service.users()
@@ -46,4 +45,3 @@ def send(to, subject, content):
         .execute()
     )
     
-creds = load_creds()

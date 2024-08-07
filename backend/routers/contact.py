@@ -94,7 +94,7 @@ def signal_contact(
     
     contact_table[other_id] = {
         "contact_id": user_id,
-        "name": CommunityUser(other_id).cache.read().json_data["name"],
+        "name": CommunityUser(user_id).cache.read().json_data.get("name", "New User"),
         "timestamp": time.time()
     }
     

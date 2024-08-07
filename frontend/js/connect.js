@@ -18,18 +18,20 @@ if (params.has('to')) {
 
     referrerName.innerText = atob(referrer_name)
 
-    if (params.has('notify')) {
-        fetch(`/api/user/${user_id}/signal/${referrer_id}`, {
-            method: "POST",
-            headers: {
-                "user-Key": user_key
-            }
-        });
-        var url = new URL(window.location.href);
-        var url_params = url.searchParams;
-        url_params.delete('notify');
-        var new_url = url.origin + url.pathname + '?' + url_params.toString();
-        window.history.replaceState({}, document.title, new_url);
+    function sendSignal() {
+        if (params.has('notify')) {
+            fetch(`/api/user/${user_id}/signal/${referrer_id}`, {
+                method: "POST",
+                headers: {
+                    "user-Key": user_key
+                }
+            });
+            var url = new URL(window.location.href);
+            var url_params = url.searchParams;
+            url_params.delete('notify');
+            var new_url = url.origin + url.pathname + '?' + url_params.toString();
+            window.history.replaceState({}, document.title, new_url);
+        }
     }
 
     if (user_key) {
@@ -43,6 +45,7 @@ if (params.has('to')) {
             .then(({resp, data}) => {
                 if (resp.ok) {
                     console.log(data);
+                    sendSignal();
                     if (data.note) {
                         textInput.value = data.note;
                     }
@@ -57,6 +60,7 @@ if (params.has('to')) {
             .then(resp => {
                 user_key = resp.user_key;
                 user_id = resp.user_id;
+                sendSignal();
                 localStorage.setItem('user_key', resp.user_key);
                 localStorage.setItem('user_id', resp.user_id);
                 localStorage.setItem('warn_setup_profile', 'true');
@@ -66,6 +70,8 @@ if (params.has('to')) {
         })
     }
 }
+
+
 
 function makeConnection() {
     fetch(`/api/user/${user_id}/connect/${referrer_id}`, {

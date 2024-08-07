@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Header
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 import nanoid
 from rid_lib.core import DataObject
 from rid_lib.types import KoiLink, KoiSet
@@ -13,7 +13,7 @@ router = APIRouter(
 
 class UserModel(BaseModel):
     name: str
-    email: EmailStr
+    email: str
     bio: str | None = None
     location: str | None = None
     contact_info: str | None = None

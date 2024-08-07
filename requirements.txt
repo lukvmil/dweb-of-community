@@ -2,4 +2,5 @@ fastapi
 neo4j
 nanoid
 uvicorn
+qrcode
 git+https://github.com/BlockScience/koi-api

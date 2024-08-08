@@ -29,7 +29,7 @@ def send(to, subject, content):
     service = build("gmail", "v1", credentials=creds)
     message = EmailMessage()
     
-    message.set_content(content)
+    message.set_content(content, subtype="html")
     message["To"] = to
     message["From"] = "webofcommunity.org"
     message["Subject"] = subject

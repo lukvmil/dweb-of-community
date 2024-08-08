@@ -67,17 +67,26 @@ def update_user(
     if user_key != data["user_key"]:
         raise HTTPException(status_code=401, detail="Unauthorized")
     
-    # if data.get("email") != profile.email:
-    #     email_api.send(
-    #         profile.email,
-    #         "Welcome to the Web of Community!",
-    #         f"""Hi {profile.name},
-            
-    #         You are receiving this email because you just joined the Web of Community, or changed your email address. Here is the recovery key for your account:
-            
-    #         {user_id}/{user_key}
-    #         """
-    #     )
+    if data.get("email") != profile.email:
+        email_api.send(
+            profile.email,
+            "Welcome to the Web of Community!",
+            f"""<p>Hi {profile.name},</p>
+<p style="text-indent: 4em;">You are receiving this email because you just joined the Web of Community, or changed your email address. Here is
+    the recovery key for your account:</p>
+<p style="text-indent: 4em;">{user_id}/{user_key}</p>
+<p style="text-indent: 4em;">Web of Community is an ephermal experiment that will be running for the duration of camp. It
+allows you to easily exchange contact info while helping to grow the network of connections by sharing your QR code!
+You are also encouraged to add knowledge obejcts to the network by adding public URLs to projects you've worked on
+or just things you find interesting. The collective knowledge sourced by the community as well as all of the
+connections you made will be sent to you at the end of camp to this email address!</p>
+
+<p>Thanks for participating,<br>
+Luke Miller<br>
+Research Engineer<br>
+BlockScience, Metagov</p>
+            """
+        )
     
     data.update(profile.model_dump())
     user.cache.write(DataObject(data))

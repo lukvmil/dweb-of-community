@@ -17,7 +17,7 @@ def create_knowledge(user_id: str, knowledge: KnowledgeModel):
     document = WebPage(knowledge.url)
     document.graph.create()
     document.cache.write(from_dereference=True)
-    document.vector.embed(from_cache=True, flush_queue=True)
+    document.vector.embed(from_cache=True, suppress_queue=True)
     
     knowledge_set = user.graph.read_link("has_knowledge")
     knowledge_set.graph.update(add_members=[document])

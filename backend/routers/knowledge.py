@@ -23,3 +23,17 @@ def create_knowledge(user_id: str, knowledge: KnowledgeModel):
     knowledge_set.graph.update(add_members=[document])
     
     return document.cache.read().json_data
+
+@router.get("")
+def read_knowledge(user_id: str):
+    user = CommunityUser(user_id)
+    
+    knowledge_set = user.graph.read_link("has_knowledge")
+    return [obj.reference for obj in knowledge_set.graph.read()]
+
+@router.delete("")
+def delete_knowledge(user_id: str, knowledge: KnowledgeModel):
+    document = WebPage(knowledge.url)
+    document.graph.delete()
+    document.cache.delete()
+    document.vector.delete()

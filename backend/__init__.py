@@ -10,7 +10,7 @@ app.include_router(contact.router)
 app.include_router(all.router)
 app.include_router(knowledge.router)
 
-origin = "community.dweb"
+origin = "127.0.0.1"
 invite_url = f"http://{origin}/connect?to={ROOT_ID}&name=Um9vdA&root"
 print("Root URL:", invite_url)
 qrcode.make(invite_url).save("root.png")

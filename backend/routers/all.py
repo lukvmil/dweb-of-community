@@ -20,6 +20,10 @@ def read_all(user_id: str, user_key = Header(...)):
     
     contact_set = user.graph.read_link("has_contacts")
     contacts = contact_set.graph.read()
+    
+    knowledge_set = user.graph.read_link("has_knowledge")
+    knowledge_objs = knowledge_set.graph.read()
+    knowledge = [obj.reference for obj in knowledge_objs]
         
     connections = []
     for contact in contacts:
@@ -37,6 +41,7 @@ def read_all(user_id: str, user_key = Header(...)):
     return {
         "user": user_data,
         "connections": connections,
+        "knowledge": knowledge,
         "graph": read_graph(user_id)
     }
         

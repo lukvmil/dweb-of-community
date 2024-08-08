@@ -10,7 +10,9 @@ const connectionItemTemplate = document.getElementById("connection-item-template
 const connectionItems = document.getElementById("connection-items");
 const profileItems = document.getElementById("profile-items");
 const knowledgeItems = document.getElementById("knowledge-items");
+const knowledgeItemTemplate = document.getElementById("knowledge-item-template");
 const knowledgeGraphSwitch = document.getElementById("knowledge-graph-switch");
+const knowledgeObjectCreator = document.getElementById("knowledge-object-creator");
 
 var user_id = localStorage.getItem('user_id');
 var user_key = localStorage.getItem('user_key');
@@ -24,7 +26,7 @@ if (setup_profile) {
     graphContainer.hidden = true;
 }
 
-if (user_id) {    
+if (user_id) {
     loadAll();
     setInterval(() => {
         pollContact();
@@ -40,7 +42,30 @@ if (user_id) {
     connectionContainer.hidden = true;
     introContainer.hidden = false;
     graphContainer.hidden = true;
-}    
+}
+
+function addKnowledge() {
+    let url = knowledgeObjectCreator.value;
+    knowledgeObjectCreator.placeholder = "Uploading... (this can take awhile)"
+    knowledgeObjectCreator.value = "";
+    fetch(`/api/user/${user_id}/knowledge`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            url: url
+        })
+    })
+        .then(resp => resp.json())
+        .then(data => {
+            loadAll();
+            knowledgeObjectCreator.placeholder = "Enter a URL!";
+        })
+        .catch(err => {
+            knowledgeObjectCreator.placeholder = "Upload failed, please try again"
+        })
+}
 
 async function pollContact() {
     await fetch(`/api/user/${user_id}/signal`, {
@@ -65,14 +90,22 @@ async function loadAll() {
         .then(resp => resp.json())
         .then(data => {
             loadQR(user_id, data.user.name);
+            profileItems.innerHTML = '';
             profileItems.appendChild(createProfileItem(data.user));
-            knowledgeItems.appendChild(createKnowledgeItem());
+            
+            knowledgeItems.innerHTML = '';
+            data.knowledge.forEach(url => {
+                knowledgeItems.appendChild(createKnowledgeItem(url));
+            })
+
+            // knowledgeItems.appendChild(createKnowledgeItem());
+            connectionItems.innerHTML = '';
             data.connections.forEach(item => {
                 connectionItems.appendChild(createConnectionItem(item))
             });
             nodes = data.graph.nodes;
             edges = data.graph.edges;
-            loadGraph(nodes, edges, false);
+            loadGraph(nodes, edges, knowledgeGraphSwitch.checked);
         })
 }
 
@@ -125,7 +158,7 @@ function loadGraph(nodes, edges, show_knowledge) {
                     'target-arrow-color': 'black',
                     'target-arrow-shape': 'triangle',
                     'curve-style': 'bezier'
-                  }
+                }
             },
             {
                 selector: 'edge[role="invited_user"]',
@@ -136,7 +169,7 @@ function loadGraph(nodes, edges, show_knowledge) {
             {
                 selector: 'edge[role="user"]',
                 style: {
-                    
+
                 }
             },
             {
@@ -193,7 +226,7 @@ function loadGraph(nodes, edges, show_knowledge) {
             if (!show_knowledge)
                 return;
         }
-        
+
         cy.add({
             data: {
                 id: `${edge.to}:${edge.from}`,
@@ -223,6 +256,30 @@ function loadGraph(nodes, edges, show_knowledge) {
     }).run();
 }
 
+function createKnowledgeItem(url) {
+    let knowledgeItem = knowledgeItemTemplate.cloneNode(true);
+    knowledgeItem.hidden = false;
+    knowledgeItem.children[0].textContent = url
+    knowledgeItem.children[0].href = url
+    knowledgeItem.children[1].onclick = () => {
+        fetch(`/api/user/${user_id}/knowledge`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                {
+                    "url": url
+                }
+            )
+        })
+            .then(resp => {
+                loadAll();
+            })
+    }
+    return knowledgeItem;
+}
+
 function createListItem(text, type) {
     let listItem = connectionItemTemplate.cloneNode(true);
     listItem.hidden = false;
@@ -232,25 +289,25 @@ function createListItem(text, type) {
     return listItem;
 }
 
-function createKnowledgeItem() {
-    let knowledgeItem = connectionTemplate.cloneNode(true);
-    knowledgeItem.hidden = false;
-    let button = knowledgeItem.children[0].children[0];
-    button.setAttribute("data-bs-target", `#knowledge`);
-    button.setAttribute("id", `knowledge-button`);
-    button.children[0].textContent = "Knowledge Objects";
-    knowledgeItem.children[1].setAttribute("id", `knowledge`);
-    let body = knowledgeItem.children[1].children[0];
-    let list = body.children[0];
-    let update_button = body.children[1];
+// function createKnowledgeItem() {
+//     let knowledgeItem = connectionTemplate.cloneNode(true);
+//     knowledgeItem.hidden = false;
+//     let button = knowledgeItem.children[0].children[0];
+//     button.setAttribute("data-bs-target", `#knowledge`);
+//     button.setAttribute("id", `knowledge-button`);
+//     button.children[0].textContent = "Knowledge Objects";
+//     knowledgeItem.children[1].setAttribute("id", `knowledge`);
+//     let body = knowledgeItem.children[1].children[0];
+//     let list = body.children[0];
+//     let update_button = body.children[1];
 
-    list.appendChild(createListItem("https://en.wikipedia.org/wiki/Decentralized_web", ""));
+//     list.appendChild(createListItem("https://en.wikipedia.org/wiki/Decentralized_web", ""));
 
-    update_button.textContent = 'Add new knowledge object';
+//     update_button.textContent = 'Add new knowledge object';
 
-    return knowledgeItem
+//     return knowledgeItem
 
-}
+// }
 
 function createProfileItem(item) {
     let connectionItem = connectionTemplate.cloneNode(true);
@@ -264,12 +321,12 @@ function createProfileItem(item) {
     let body = connectionItem.children[1].children[0];
     let list = body.children[0];
     let update_button = body.children[1];
-    
-    if (item.email) {list.appendChild(createListItem(item.email, "email"))}
-    if (item.bio) {list.appendChild(createListItem(item.bio, "bio"))}
-    if (item.location) {list.appendChild(createListItem(item.location, "location"))}
-    if (item.contact_info) {list.appendChild(createListItem(item.contact_info, "contact info"))}
-    if (item.note) {list.appendChild(createListItem(item.note, "note"))}
+
+    if (item.email) { list.appendChild(createListItem(item.email, "email")) }
+    if (item.bio) { list.appendChild(createListItem(item.bio, "bio")) }
+    if (item.location) { list.appendChild(createListItem(item.location, "location")) }
+    if (item.contact_info) { list.appendChild(createListItem(item.contact_info, "contact info")) }
+    if (item.note) { list.appendChild(createListItem(item.note, "note")) }
 
     update_button.textContent = 'Update profile';
     update_button.onclick = () => {
@@ -291,12 +348,12 @@ function createConnectionItem(item) {
     let body = connectionItem.children[1].children[0];
     let list = body.children[0];
     let update_button = body.children[1];
-    
-    if (item.email) {list.appendChild(createListItem(item.email, "email"))}
-    if (item.bio) {list.appendChild(createListItem(item.bio, "bio"))}
-    if (item.location) {list.appendChild(createListItem(item.location, "location"))}
-    if (item.contact_info) {list.appendChild(createListItem(item.contact_info, "contact info"))}
-    if (item.note) {list.appendChild(createListItem(item.note, "note"))}
+
+    if (item.email) { list.appendChild(createListItem(item.email, "email")) }
+    if (item.bio) { list.appendChild(createListItem(item.bio, "bio")) }
+    if (item.location) { list.appendChild(createListItem(item.location, "location")) }
+    if (item.contact_info) { list.appendChild(createListItem(item.contact_info, "contact info")) }
+    if (item.note) { list.appendChild(createListItem(item.note, "note")) }
 
     update_button.onclick = () => {
         location.href = `/connect?to=${item.user_id}&name=${btoa(item.name)}`;

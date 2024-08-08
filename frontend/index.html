@@ -57,26 +57,30 @@
       </div> -->
       <div class="card mb-4" id="profile-container">
         <div class="card-header">
-          Your profile
+          Your Profile
         </div>
-        <div class="accordion accordion-flush" id="profile-items">
-        </div>
+        <div class="accordion accordion-flush" id="profile-items"></div>
         <div class="card-footer"></div>
       </div>
       <div class="card mb-4" id="graph-container">
         <div class="card-header">
-          Graph view
+          Knowledge Graph
         </div>
         <!-- <div class="d-flex my-4 justify-content-center"> -->
-          <div id="cy"></div>
+        <div id="cy"></div>
+        <div class="accordion accordion-flush" id="knowledge-items"></div>
         <!-- </div> -->
         <div class="card-footer">
-          the orange node represents you and blue nodes represent your connections
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="knowledge-graph-switch">
+            <label class="form-check-label" for="knowledge-graph-switch">Show knowledge objects</label>
+          </div>
+          <!-- the orange node represents you and blue nodes represent your connections -->
         </div>
       </div>
       <div class="card" id="connection-container">
         <div class="card-header">
-          Your connections
+          Your Connections
         </div>
         <div class="accordion accordion-flush" id="connection-items">
         </div>

@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Header
 from backend.rid_types import CommunityUser, CommunityContact
 from koi.exceptions import RID
 from koi.graph import driver
+import bs4
 
 router = APIRouter(
     prefix="/api/user"
@@ -49,16 +50,19 @@ def read_graph(tx, root_user_id):
         
     nodes = []
     edges = []
-    
-    node_set_pairs = {}
-        
+            
     record = tx.run(READ_GRAPH)
     entries = [dict(entry) for entry in record]
         
-    node_set_pairs = {}
+    node_contact_set_pairs = {}
     for entry in entries:
         if entry["e_tag"] == "has_contacts":
-            node_set_pairs[entry["m"]] = entry["n"]
+            node_contact_set_pairs[entry["m"]] = entry["n"]
+            
+    node_knowledge_set_pairs = {}
+    for entry in entries:
+        if entry["e_tag"] == "has_knowledge":
+            node_knowledge_set_pairs[entry["m"]] = entry["n"]
         
     invitation_pairs = {}
     for entry in entries:
@@ -67,34 +71,65 @@ def read_graph(tx, root_user_id):
     
     contact_links = [entry for entry in entries if entry["e_type"] == "CONTAINS"]
     
-    unique_nodes = set(node_set_pairs.values())
+    unique_nodes = set(node_contact_set_pairs.values())
     
     for node in unique_nodes:
         user = RID.from_string(node)
         nodes.append({
             "id": RID.from_string(node).reference,
-            "name": user.cache.read().json_data.get("name")
+            "name": user.cache.read().json_data.get("name"),
+            "type": "user"
         })
     
     for link in contact_links:
         set_node = link["n"]
-        contact_node = link["m"]
-        user_node = node_set_pairs[set_node]
+        member_node = link["m"]
         
-        contact_id = RID.from_string(contact_node).reference
-        user_id = RID.from_string(user_node).reference
+        if set_node in node_contact_set_pairs:
+            user_node = node_contact_set_pairs[set_node]
+            
+            contact_id = RID.from_string(member_node).reference
+            user_id = RID.from_string(user_node).reference
+            
+            if contact_id == root_user_id:
+                for node in nodes:
+                    if node.get("id") == user_id:
+                        node["friend"] = True
+            
+            if CommunityContact(user_id, contact_id).cache.read().json_data.get("inviter"):
+                edges.append({
+                    "to": user_id,
+                    "from": contact_id,
+                    "type": "user", 
+                    "invited": invitation_pairs.get(user_node) == member_node
+                })
         
-        if contact_id == root_user_id:
-            for node in nodes:
-                if node.get("id") == user_id:
-                    node["friend"] = True
-        
-        if CommunityContact(user_id, contact_id).cache.read().json_data.get("inviter"):
-            edges.append({
-                "to": user_id,
-                "from": contact_id,
-                "invited": invitation_pairs.get(user_node) == contact_node
+        elif set_node in node_knowledge_set_pairs:
+            user_node = node_knowledge_set_pairs[set_node]
+            
+            knowledge = RID.from_string(member_node)
+            user_id = RID.from_string(user_node).reference
+            
+            html = knowledge.cache.read().json_data.get("html")
+            
+            if html:
+                title = bs4.BeautifulSoup(html).title.text
+            else:
+                title = "Knowledge Object"
+            
+            nodes.append({
+                "id": knowledge.reference,
+                "name": title,
+                "type": "knowledge"
             })
+            
+            edges.append({
+                "to": knowledge.reference,
+                "from": user_id,
+                "type": "knowledge"
+            })
+            
+            
         
     return {
         "nodes": nodes,

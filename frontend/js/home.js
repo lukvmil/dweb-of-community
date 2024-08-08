@@ -9,10 +9,14 @@ const connectionTemplate = document.getElementById("connection-template");
 const connectionItemTemplate = document.getElementById("connection-item-template");
 const connectionItems = document.getElementById("connection-items");
 const profileItems = document.getElementById("profile-items");
+const knowledgeItems = document.getElementById("knowledge-items");
+const knowledgeGraphSwitch = document.getElementById("knowledge-graph-switch");
 
 var user_id = localStorage.getItem('user_id');
 var user_key = localStorage.getItem('user_key');
 var setup_profile = localStorage.getItem('warn_setup_profile');
+var cy;
+var nodes, edges;
 
 if (setup_profile) {
     setupContainer.hidden = false;
@@ -25,6 +29,11 @@ if (user_id) {
     setInterval(() => {
         pollContact();
     }, 1000);
+
+    knowledgeGraphSwitch.addEventListener("change", () => {
+        loadGraph(nodes, edges, knowledgeGraphSwitch.checked);
+    })
+
 } else {
     qrContainer.hidden = true;
     profileContainer.hidden = true;
@@ -57,15 +66,18 @@ async function loadAll() {
         .then(data => {
             loadQR(user_id, data.user.name);
             profileItems.appendChild(createProfileItem(data.user));
+            knowledgeItems.appendChild(createKnowledgeItem());
             data.connections.forEach(item => {
                 connectionItems.appendChild(createConnectionItem(item))
             });
-            loadGraph(data.graph.nodes, data.graph.edges);
+            nodes = data.graph.nodes;
+            edges = data.graph.edges;
+            loadGraph(nodes, edges, false);
         })
 }
 
-function loadGraph(nodes, edges) {
-    var cy = cytoscape({
+function loadGraph(nodes, edges, show_knowledge) {
+    cy = cytoscape({
         container: document.getElementById("cy"),
         style: [
             {
@@ -98,15 +110,40 @@ function loadGraph(nodes, edges) {
                 }
             },
             {
+                selector: 'node[role="knowledge"]',
+                style: {
+                    'background-color': '#FFD700',
+                    'border-style': 'dashed',
+                    'z-index': -10
+                }
+            },
+            {
                 selector: "edge",
                 style: {
                     'width': 3,
                     'line-color': 'black',
                     'target-arrow-color': 'black',
                     'target-arrow-shape': 'triangle',
-                    'curve-style': 'bezier',
-                    'line-style': 'data(linestyle)'
+                    'curve-style': 'bezier'
                   }
+            },
+            {
+                selector: 'edge[role="invited_user"]',
+                style: {
+                    "line-style": "dashed"
+                }
+            },
+            {
+                selector: 'edge[role="user"]',
+                style: {
+                    
+                }
+            },
+            {
+                selector: 'edge[role="knowledge"]',
+                style: {
+                    // "line-style": "dotted"
+                }
             }
         ]
     });
@@ -115,18 +152,23 @@ function loadGraph(nodes, edges) {
 
     nodes.forEach(node => {
         let role;
-        if (node.id == user_id) {
-            role = "user";
-        } else if (node.friend) {
-            role = "friend";
-        } else {
-            role = "unknown";
-        }
+        if (node.type == "user") {
+            if (node.id == user_id) {
+                role = "user";
+            } else if (node.friend) {
+                role = "friend";
+            } else {
+                role = "unknown";
+            }
 
-        if (!node.name) {
-            unnamed_nodes.push(node.id);
-            return;
-        };
+            if (!node.name) {
+                unnamed_nodes.push(node.id);
+                return;
+            };
+        } else if (node.type == "knowledge") {
+            role = "knowledge"
+            if (!show_knowledge) return;
+        }
 
         cy.add({
             data: {
@@ -137,29 +179,47 @@ function loadGraph(nodes, edges) {
         })
     });
     edges.forEach(edge => {
-        if (unnamed_nodes.includes(edge.from) || unnamed_nodes.includes(edge.to))
-            return;
+        let role;
+        if (edge.type == "user") {
+            if (unnamed_nodes.includes(edge.from) || unnamed_nodes.includes(edge.to))
+                return;
+            if (edge.invited) {
+                role = "invited_user"
+            } else {
+                role = "user";
+            }
+        } else if (edge.type == "knowledge") {
+            role = "knowledge";
+            if (!show_knowledge)
+                return;
+        }
         
         cy.add({
             data: {
                 id: `${edge.to}:${edge.from}`,
                 source: edge.from,
                 target: edge.to,
+                role: role,
                 linestyle: edge.invited ? "dashed" : "solid"
             }
         })
     });
     cy.on('tap', 'node', event => {
         let node = event.target;
-        let profileButton = document.getElementById(`profile-button-${node.id()}`)
-        if (profileButton) {
-            profileButton.click();
-            if (!profileButton.classList.contains("collapsed"))
-                profileButton.scrollIntoView(true);
+        if (node.data().role == "knowledge") {
+            window.open(node.id());
+        } else {
+            let profileButton = document.getElementById(`profile-button-${node.id()}`)
+            if (profileButton) {
+                profileButton.click();
+                if (!profileButton.classList.contains("collapsed"))
+                    profileButton.scrollIntoView(true);
+            }
         }
     });
     cy.layout({
-        name: "cose"
+        name: "cose",
+        animate: false
     }).run();
 }
 
@@ -170,6 +230,26 @@ function createListItem(text, type) {
     // listItem.innerHTML += text;
     listItem.insertAdjacentHTML('afterbegin', text);
     return listItem;
+}
+
+function createKnowledgeItem() {
+    let knowledgeItem = connectionTemplate.cloneNode(true);
+    knowledgeItem.hidden = false;
+    let button = knowledgeItem.children[0].children[0];
+    button.setAttribute("data-bs-target", `#knowledge`);
+    button.setAttribute("id", `knowledge-button`);
+    button.children[0].textContent = "Knowledge Objects";
+    knowledgeItem.children[1].setAttribute("id", `knowledge`);
+    let body = knowledgeItem.children[1].children[0];
+    let list = body.children[0];
+    let update_button = body.children[1];
+
+    list.appendChild(createListItem("https://en.wikipedia.org/wiki/Decentralized_web", ""));
+
+    update_button.textContent = 'Add new knowledge object';
+
+    return knowledgeItem
+
 }
 
 function createProfileItem(item) {

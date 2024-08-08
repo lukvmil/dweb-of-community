@@ -94,15 +94,23 @@ async function loadAll() {
             profileItems.appendChild(createProfileItem(data.user));
             
             knowledgeItems.innerHTML = '';
-            data.knowledge.forEach(url => {
-                knowledgeItems.appendChild(createKnowledgeItem(url));
-            })
+            if (data.knowledge.length == 0) {
+                knowledgeItems.innerText = "You haven't added any knowledge objects yet, link a website you want to curate below!"
+            } else {
+                data.knowledge.forEach(url => {
+                    knowledgeItems.appendChild(createKnowledgeItem(url));
+                })
+            }
 
             // knowledgeItems.appendChild(createKnowledgeItem());
             connectionItems.innerHTML = '';
-            data.connections.forEach(item => {
-                connectionItems.appendChild(createConnectionItem(item))
-            });
+            if (data.connections.length == 0) {
+                connectionItems.innerText = "You don't have any connections yet"
+            } else {
+                data.connections.forEach(item => {
+                    connectionItems.appendChild(createConnectionItem(item))
+                });
+            }
             nodes = data.graph.nodes;
             edges = data.graph.edges;
             loadGraph(nodes, edges, knowledgeGraphSwitch.checked);

@@ -28,13 +28,13 @@ def read_all(user_id: str, user_key = Header(...)):
         
     connections = []
     for contact in contacts:
-        print(contact)
+        # print(contact)
         try:
             contact_data = contact.cache.read().json_data
         except json.decoder.JSONDecodeError:
             continue
         if not contact_data:
-            print(contact.user_id)
+            # print(contact.user_id)
             continue
         del contact_data["user_key"]
         contact_data.update(CommunityContact(
@@ -79,11 +79,11 @@ def read_graph(tx, root_user_id):
     invitation_pairs = {}
     for entry in entries:
         if entry["e_tag"] == "invited_by":
-            print('Inviters')
-            print(entry)
+            # print('Inviters')
+            # print(entry)
             invitation_pairs[entry["n"]] = entry["m"]
     
-    print(invitation_pairs)
+    # print(invitation_pairs)
     
     # print(json.dumps(entries, indent=2))
     
@@ -109,7 +109,7 @@ def read_graph(tx, root_user_id):
             contact_id = RID.from_string(member_node).reference
             user_id = RID.from_string(user_node).reference
             
-            print(user_id, "->", contact_id)
+            # print(user_id, "->", contact_id)
             
             if contact_id == root_user_id:
                 for node in nodes:
@@ -149,10 +149,10 @@ def read_graph(tx, root_user_id):
                 "type": "knowledge"
             })
         
-    print(json.dumps({
-        "nodes": nodes,
-        "edges": edges
-    }, indent=2))
+    # print(json.dumps({
+    #     "nodes": nodes,
+    #     "edges": edges
+    # }, indent=2))
         
     return {
         "nodes": nodes,

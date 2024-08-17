@@ -6,6 +6,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from email.message import EmailMessage
+from email.mime.base import MIMEBase
+from email import encoders
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
@@ -25,7 +27,7 @@ if not creds or not creds.valid:
         token.write(creds.to_json())
     
             
-def send(to, subject, content):
+def send(to, subject, content, attachments=None):
     service = build("gmail", "v1", credentials=creds)
     message = EmailMessage()
     
@@ -33,6 +35,29 @@ def send(to, subject, content):
     message["To"] = to
     message["From"] = "webofcommunity.org"
     message["Subject"] = subject
+    
+    if attachments:
+        for attachment in attachments:
+            with open(attachment, "rb") as f:
+                file_data = f.read()
+                file_name = os.path.basename(attachment)
+            
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(file_data)
+            
+            encoders.encode_base64(part)
+            
+            part.add_header(
+                "Content-Disposition",
+                f"attachment; filename={file_name}"
+            )
+            
+            message.add_attachment(
+                part.get_payload(decode=True),
+                maintype="application",
+                subtype="octet-stream",
+                filename=file_name
+            )
     
     encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
     

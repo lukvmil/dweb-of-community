@@ -42,8 +42,12 @@ def create_contact(
     user_connection_prev = user_connection.cache.read().json_data
     other_connection_prev = other_connection.cache.read().json_data
     
-    if not other_connection_prev:
-        contact_data["inviter"] = True
+    
+    if (not other_connection_prev) and (not user_connection_prev):
+        print("new connection, setting inviter")
+        other_connection_prev = {
+            "inviter": True
+        }
     
     user_connection.cache.write(
         DataObject({

@@ -30,7 +30,7 @@ if (user_id) {
     loadAll();
     setInterval(() => {
         pollContact();
-    }, 1000);
+    }, 3000);
 
     knowledgeGraphSwitch.addEventListener("change", () => {
         loadGraph(nodes, edges, knowledgeGraphSwitch.checked);

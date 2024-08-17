@@ -3,6 +3,7 @@ from backend.rid_types import CommunityUser, CommunityContact
 from koi.exceptions import RID
 from koi.graph import driver
 import bs4
+import json
 
 router = APIRouter(
     prefix="/api/user"
@@ -27,7 +28,11 @@ def read_all(user_id: str, user_key = Header(...)):
         
     connections = []
     for contact in contacts:
-        contact_data = contact.cache.read().json_data
+        print(contact)
+        try:
+            contact_data = contact.cache.read().json_data
+        except json.decoder.JSONDecodeError:
+            continue
         if not contact_data:
             print(contact.user_id)
             continue
@@ -38,12 +43,14 @@ def read_all(user_id: str, user_key = Header(...)):
         
     connections.sort(key=lambda x: x["timestamp"])
         
-    return {
+    to_return = {
         "user": user_data,
         "connections": connections,
         "knowledge": knowledge,
         "graph": read_graph(user_id)
     }
+        
+    return to_return
         
 @driver.execute_read
 def read_graph(tx, root_user_id):
@@ -72,7 +79,13 @@ def read_graph(tx, root_user_id):
     invitation_pairs = {}
     for entry in entries:
         if entry["e_tag"] == "invited_by":
+            print('Inviters')
+            print(entry)
             invitation_pairs[entry["n"]] = entry["m"]
+    
+    print(invitation_pairs)
+    
+    # print(json.dumps(entries, indent=2))
     
     contact_links = [entry for entry in entries if entry["e_type"] == "CONTAINS"]
     
@@ -96,6 +109,8 @@ def read_graph(tx, root_user_id):
             contact_id = RID.from_string(member_node).reference
             user_id = RID.from_string(user_node).reference
             
+            print(user_id, "->", contact_id)
+            
             if contact_id == root_user_id:
                 for node in nodes:
                     if node.get("id") == user_id:
@@ -103,10 +118,10 @@ def read_graph(tx, root_user_id):
             
             if CommunityContact(user_id, contact_id).cache.read().json_data.get("inviter"):
                 edges.append({
-                    "to": user_id,
-                    "from": contact_id,
+                    "from": user_id,
+                    "to": contact_id,
                     "type": "user", 
-                    "invited": invitation_pairs.get(user_node) == member_node
+                    "invited": invitation_pairs.get(member_node) == user_node
                 })
         
         elif set_node in node_knowledge_set_pairs:
@@ -133,8 +148,11 @@ def read_graph(tx, root_user_id):
                 "from": user_id,
                 "type": "knowledge"
             })
-            
-            
+        
+    print(json.dumps({
+        "nodes": nodes,
+        "edges": edges
+    }, indent=2))
         
     return {
         "nodes": nodes,

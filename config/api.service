@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/user/dweb-of-community
-ExecStart=/home/user/dweb-of-community/.env/bin/uvicorn backend:app --host 127.0.0.1 --port 8000
+ExecStart=/home/user/dweb-of-community/venv/bin/python -m backend --serve-in-foreground
 Restart=always
 
 [Install]
